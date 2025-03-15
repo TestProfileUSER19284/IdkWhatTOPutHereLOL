@@ -1,0 +1,275 @@
+using System;
+using System.Collections.Generic;
+
+namespace PetLevelCalculator
+{
+    class Program
+    {
+        // Pet level experience requirements
+        static float[] BasicPetLevels = new float[]
+        {
+            250, 500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500,
+            2750, 3000, 3250, 3500, 3750, 4000, 4250, 4500, 4750, 5000
+        };
+
+        static float[] BasicPetGlitchLevels = new float[]
+        {
+            250, 750, 1500, 2500, 3750, 5250, 7000, 9000, 11250, 13750,
+            16500, 19500, 22750, 26250, 30000, 34000, 38250, 42750, 47500, 52500
+        };
+
+        static float[] AdvancedPetLevels = new float[]
+        {
+            500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000,
+            5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000
+        };
+
+        static float[] AdvancedPetGlitchLevels = new float[]
+        {
+            500, 1500, 3000, 5000, 7500, 10500, 14000, 18000, 22500, 27500,
+            33000, 39000, 45500, 52500, 60000, 68000, 76500, 85500, 95000, 105000
+        };
+
+        static float[] ElitePetLevels = new float[]
+        {
+            750, 1500, 2250, 3000, 3750, 4500, 5250, 6000, 6750, 7500,
+            8250, 9000, 9750, 10500, 11250, 12000, 12750, 13500, 14250, 15000
+        };
+
+        static float[] ElitePetGlitchLevels = new float[]
+        {
+            750, 2250, 4500, 7500, 11250, 15750, 21000, 27000, 33750, 41250,
+            49500, 58500, 68250, 78750, 90000, 102000, 114750, 128250, 142500, 157500
+        };
+
+        static float[] EpicPetLevels = new float[]
+        {
+            1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000,
+            11000, 12000, 13000, 14000, 15000, 16000, 17000, 18000, 19000, 20000
+        };
+
+        static float[] EpicPetGlitchLevels = new float[]
+        {
+            1000, 3000, 6000, 10000, 15000, 21000, 28000, 36000, 45000, 55000,
+            66000, 78000, 91000, 105000, 120000, 136000, 153000, 171000, 190000, 210000
+        };
+
+        static float[] UniquePetLevels = new float[]
+        {
+            1250, 2500, 3750, 5000, 6250, 7500, 8750, 10000, 11250, 12500,
+            13750, 15000, 16250, 17500, 18750, 20000, 21250, 22500, 23750, 25000
+        };
+
+        static float[] UniquePetGlitchLevels = new float[]
+        {
+            1250, 3750, 7500, 12500, 18750, 26250, 35000, 45000, 56250, 68750,
+            82500, 97500, 113750, 131250, 150000, 170000, 191250, 213750, 237500, 262500
+        };
+
+        // World multipliers
+        static Dictionary<string, float> WorldMultipliers = new Dictionary<string, float>
+        {
+            { "Punching", 0.05f },
+            { "Tiny", 0.025f },
+            { "Golden", 0.2f },
+            { "Rock", 0.025f },
+            { "Frozen", 0.375f },
+            { "Mystic", 0.75f },
+            { "Inferno", 1.125f },
+            { "Legendary", 2.5f },
+            { "Mountain", 12.5f },
+            { "Ancient Jungle", 16.25f },
+            { "Large", 0.075f },
+            { "Muscle King", 12.5f }
+        };
+
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Pet Level Calculator");
+            Console.WriteLine("====================");
+
+            while (true)
+            {
+                Console.WriteLine("\nChoose an option:");
+                Console.WriteLine("1. Calculate pet level from raw XP");
+                Console.WriteLine("2. Calculate pet level from world and clicks");
+                Console.WriteLine("3. Exit");
+                Console.Write("Option: ");
+
+                string option = Console.ReadLine();
+
+                if (option == "1")
+                {
+                    CalculatePetLevelFromXP();
+                }
+                else if (option == "2")
+                {
+                    CalculatePetLevelFromWorldAndClicks();
+                }
+                else if (option == "3")
+                {
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid option. Please try again.");
+                }
+            }
+        }
+
+        static void CalculatePetLevelFromXP()
+        {
+            Console.WriteLine("\nCalculate Pet Level from XP");
+            Console.WriteLine("---------------------------");
+
+            Console.WriteLine("Select pet type:");
+            Console.WriteLine("1. Basic Pet");
+            Console.WriteLine("2. Basic Pet (Glitch)");
+            Console.WriteLine("3. Advanced Pet");
+            Console.WriteLine("4. Advanced Pet (Glitch)");
+            Console.WriteLine("5. Elite Pet");
+            Console.WriteLine("6. Elite Pet (Glitch)");
+            Console.WriteLine("7. Epic Pet");
+            Console.WriteLine("8. Epic Pet (Glitch)");
+            Console.WriteLine("9. Unique Pet");
+            Console.WriteLine("10. Unique Pet (Glitch)");
+            Console.Write("Pet type: ");
+
+            if (!int.TryParse(Console.ReadLine(), out int petTypeChoice) || petTypeChoice < 1 || petTypeChoice > 10)
+            {
+                Console.WriteLine("Invalid pet type selection.");
+                return;
+            }
+
+            Console.Write("Enter XP amount: ");
+            if (!float.TryParse(Console.ReadLine(), out float xpAmount) || xpAmount < 0)
+            {
+                Console.WriteLine("Invalid XP amount.");
+                return;
+            }
+
+            float[] selectedLevelArray = GetLevelArrayByChoice(petTypeChoice);
+            CalculateAndDisplayLevel(xpAmount, selectedLevelArray);
+        }
+
+        static void CalculatePetLevelFromWorldAndClicks()
+        {
+            Console.WriteLine("\nCalculate Pet Level from World and Clicks");
+            Console.WriteLine("----------------------------------------");
+
+            Console.WriteLine("Select pet type:");
+            Console.WriteLine("1. Basic Pet");
+            Console.WriteLine("2. Basic Pet (Glitch)");
+            Console.WriteLine("3. Advanced Pet");
+            Console.WriteLine("4. Advanced Pet (Glitch)");
+            Console.WriteLine("5. Elite Pet");
+            Console.WriteLine("6. Elite Pet (Glitch)");
+            Console.WriteLine("7. Epic Pet");
+            Console.WriteLine("8. Epic Pet (Glitch)");
+            Console.WriteLine("9. Unique Pet");
+            Console.WriteLine("10. Unique Pet (Glitch)");
+            Console.Write("Pet type: ");
+
+            if (!int.TryParse(Console.ReadLine(), out int petTypeChoice) || petTypeChoice < 1 || petTypeChoice > 10)
+            {
+                Console.WriteLine("Invalid pet type selection.");
+                return;
+            }
+
+            Console.WriteLine("\nSelect world:");
+            int index = 1;
+            foreach (var world in WorldMultipliers)
+            {
+                Console.WriteLine($"{index}. {world.Key} ({world.Value})");
+                index++;
+            }
+            Console.Write("World: ");
+
+            if (!int.TryParse(Console.ReadLine(), out int worldChoice) || worldChoice < 1 || worldChoice > WorldMultipliers.Count)
+            {
+                Console.WriteLine("Invalid world selection.");
+                return;
+            }
+
+            string selectedWorld = WorldMultipliers.Keys.ElementAt(worldChoice - 1);
+            float worldMultiplier = WorldMultipliers[selectedWorld];
+
+            Console.Write("Enter number of clicks: ");
+            if (!int.TryParse(Console.ReadLine(), out int clicks) || clicks < 0)
+            {
+                Console.WriteLine("Invalid number of clicks.");
+                return;
+            }
+
+            // Calculate XP from clicks and world multiplier
+            // Adding 20 to clicks as per the example calculation
+            float totalXP = (clicks + 20) * worldMultiplier;
+            Console.WriteLine($"\nTotal XP from {clicks} clicks in {selectedWorld}: {totalXP}");
+
+            float[] selectedLevelArray = GetLevelArrayByChoice(petTypeChoice);
+            CalculateAndDisplayLevel(totalXP, selectedLevelArray);
+        }
+
+        static float[] GetLevelArrayByChoice(int choice)
+        {
+            return choice switch
+            {
+                1 => BasicPetLevels,
+                2 => BasicPetGlitchLevels,
+                3 => AdvancedPetLevels,
+                4 => AdvancedPetGlitchLevels,
+                5 => ElitePetLevels,
+                6 => ElitePetGlitchLevels,
+                7 => EpicPetLevels,
+                8 => EpicPetGlitchLevels,
+                9 => UniquePetLevels,
+                10 => UniquePetGlitchLevels,
+                _ => BasicPetLevels
+            };
+        }
+
+        static void CalculateAndDisplayLevel(float xp, float[] levelArray)
+        {
+            int level = 0;
+            float remainingXP = xp;
+
+            // Find the level based on XP
+            for (int i = 0; i < levelArray.Length; i++)
+            {
+                if (remainingXP < levelArray[i])
+                {
+                    level = i + 1;
+                    break;
+                }
+                remainingXP -= levelArray[i];
+            }
+
+            // If we've gone through all levels and still have XP, the pet is max level
+            if (level == 0 && remainingXP >= 0)
+            {
+                level = 20;
+                remainingXP = 0;
+            }
+
+            // Calculate XP to next level
+            float xpToNextLevel = 0;
+            if (level < 20)
+            {
+                xpToNextLevel = levelArray[level - 1] - remainingXP;
+            }
+
+            Console.WriteLine($"\nPet Level: {level}");
+            
+            if (level < 20)
+            {
+                Console.WriteLine($"Current XP: {remainingXP}");
+                Console.WriteLine($"XP to next level: {xpToNextLevel}");
+                Console.WriteLine($"Progress to next level: {(remainingXP / levelArray[level - 1] * 100):F2}%");
+            }
+            else
+            {
+                Console.WriteLine("Pet is at maximum level!");
+            }
+        }
+    }
+}
